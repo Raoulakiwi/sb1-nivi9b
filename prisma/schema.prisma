@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String
+  role          Role      @default(BUSINESS_OWNER)
+  mfaSecret     String?
+  mfaEnabled    Boolean   @default(false)
+  walletAddress String?
+  businesses    Business[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Business {
+  id                    String   @id @default(cuid())
+  name                  String
+  owner                 User     @relation(fields: [ownerId], references: [id])
+  ownerId              String
+  walletAddress        String
+  nftContractAddress   String?
+  revenueWalletAddress String
+  distributionFrequency String
+  minBalanceThreshold  String
+  supportedCurrencies  String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  BUSINESS_OWNER
+}
